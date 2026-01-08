@@ -94,49 +94,7 @@ body {
   font-weight: 600;
 }
 
-.counter-display {
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-align: center;
-  color: var(--primary);
-  padding: 1rem 0;
-  background: #f9fafb;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-}
 
-.counter-buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-.counter-btn {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 6px;
-  background: var(--primary);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.counter-btn:hover {
-  background: #1d4ed8;
-}
-
-.counter-btn:active {
-  transform: scale(0.98);
-}
-
-.counter-btn.reset {
-  background: var(--danger);
-}
-
-.counter-btn.reset:hover {
-  background: #dc2626;
-}
 
 /* News Ticker Styles */
 .news-ticker {
