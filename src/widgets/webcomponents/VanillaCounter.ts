@@ -1,10 +1,20 @@
 class VanillaCounter extends HTMLElement {
   count: number = 0
+  handleReset: () => void
 
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
+    this.handleReset = this.reset.bind(this)
     this.render()
+  }
+
+  connectedCallback(): void {
+    window.addEventListener('reset-widgets', this.handleReset as EventListener)
+  }
+
+  disconnectedCallback(): void {
+    window.removeEventListener('reset-widgets', this.handleReset as EventListener)
   }
 
   render(): void {
@@ -71,6 +81,12 @@ class VanillaCounter extends HTMLElement {
       this.count = 0
       display.textContent = String(this.count)
     })
+  }
+
+  reset(): void {
+    this.count = 0
+    const display = this.shadowRoot?.querySelector('.display') as HTMLElement | null
+    if (display) display.textContent = String(this.count)
   }
 }
 

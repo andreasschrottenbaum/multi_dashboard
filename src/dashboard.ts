@@ -15,6 +15,7 @@ export function setupDashboard(): void {
       <header class="dashboard-header">
         <h1>Multi-Framework Dashboard</h1>
         <p>A vanilla TypeScript host with counter widgets in Web Components, React, Vue, and Svelte</p>
+        <button id="reset-all" class="reset-all">Reset all widgets</button>
       </header>
 
       <main class="dashboard-grid">
@@ -77,5 +78,13 @@ export function setupDashboard(): void {
   const svelteContainer = document.querySelector('#svelte-counter') as HTMLDivElement | null
   if (svelteContainer) {
     new SvelteCounter({ target: svelteContainer })
+  }
+
+  // Wire reset-all button to dispatch a global reset event
+  const resetAllBtn = document.querySelector('#reset-all') as HTMLButtonElement | null
+  if (resetAllBtn) {
+    resetAllBtn.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('reset-widgets'))
+    })
   }
 }

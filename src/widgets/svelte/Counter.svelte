@@ -14,6 +14,8 @@
   }
 </script>
 
+<svelte:window on:reset-widgets={reset} />
+
 <div class="svelte-counter">
   <div class="counter-display">{count}</div>
   <div class="counter-buttons">

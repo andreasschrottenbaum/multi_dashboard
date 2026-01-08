@@ -1,7 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 export default function Counter(): JSX.Element {
   const [count, setCount] = useState<number>(0)
+
+  useEffect(() => {
+    const handler = () => setCount(0)
+    window.addEventListener('reset-widgets', handler as EventListener)
+    return () => window.removeEventListener('reset-widgets', handler as EventListener)
+  }, [])
 
   return (
     <div className="react-counter">
