@@ -1,20 +1,92 @@
-class VanillaCounter extends HTMLElement {
-  count: number = 0
+interface CryptoData {
+  symbol: string
+  name: string
+  prices: number[][]
+  marketCaps: number[][]
+}
+
+class CryptoTracker extends HTMLElement {
+  selectedCrypto: 'bitcoin' | 'ethereum' = 'bitcoin'
+  cryptoData: Map<string, CryptoData> = new Map()
   handleReset: () => void
 
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
     this.handleReset = this.reset.bind(this)
-    this.render()
   }
 
-  connectedCallback(): void {
+  async connectedCallback(): Promise<void> {
     window.addEventListener('reset-widgets', this.handleReset as EventListener)
+    await this.fetchCryptoData()
+    this.render()
   }
 
   disconnectedCallback(): void {
     window.removeEventListener('reset-widgets', this.handleReset as EventListener)
+  }
+
+  async fetchCryptoData(): Promise<void> {
+    try {
+      const cryptos = ['bitcoin', 'ethereum']
+      for (const crypto of cryptos) {
+        const response = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${crypto}/market_chart?vs_currency=usd&days=7&interval=daily`
+        )
+        const data = await response.json()
+        this.cryptoData.set(crypto, {
+          symbol: crypto === 'bitcoin' ? 'BTC' : 'ETH',
+          name: crypto === 'bitcoin' ? 'Bitcoin' : 'Ethereum',
+          prices: data.prices,
+          marketCaps: data.market_caps
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch crypto data:', error)
+    }
+  }
+
+  createChart(): string {
+    const data = this.cryptoData.get(this.selectedCrypto)
+    if (!data || !data.prices.length) return ''
+
+    const prices = data.prices.map(p => p[1])
+    const minPrice = Math.min(...prices)
+    const maxPrice = Math.max(...prices)
+    const range = maxPrice - minPrice || 1
+
+    const svgWidth = 350
+    const svgHeight = 150
+    const padding = 20
+
+    const points = prices
+      .map((price, i) => {
+        const x = padding + (i / (prices.length - 1)) * (svgWidth - 2 * padding)
+        const y = svgHeight - padding - ((price - minPrice) / range) * (svgHeight - 2 * padding)
+        return `${x},${y}`
+      })
+      .join(' ')
+
+    const currentPrice = prices[prices.length - 1]
+    const previousPrice = prices[0]
+    const change = ((currentPrice - previousPrice) / previousPrice) * 100
+    const changeColor = change >= 0 ? '#10b981' : '#ef4444'
+
+    return `
+      <svg width="100%" height="150" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" style="border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; max-width: 100%;">
+        <polyline points="${points}" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; font-size: 0.9rem;">
+        <div>
+          <div style="color: #6b7280;">Current Price</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">$${currentPrice.toFixed(2)}</div>
+        </div>
+        <div>
+          <div style="color: #6b7280;">7-Day Change</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: ${changeColor};">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
+        </div>
+      </div>
+    `
   }
 
   render(): void {
@@ -24,72 +96,82 @@ class VanillaCounter extends HTMLElement {
     shadow.innerHTML = `
       <style>
         :host { display: block; }
-        .display {
-          font-size: 2.5rem;
-          font-weight: 700;
-          text-align: center;
-          color: #2563eb;
-          padding: 1rem 0;
-          background: #f9fafb;
-          border-radius: 6px;
+        .container {
+          padding: 1rem;
+          background: white;
+          border-radius: 8px;
+        }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           margin-bottom: 1rem;
         }
-        .buttons {
+        .title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1f2937;
+        }
+        .selector {
           display: flex;
           gap: 0.5rem;
-          justify-content: center;
         }
-        button {
-          padding: 0.6rem 1.2rem;
-          border: none;
+        .selector button {
+          padding: 0.5rem 1rem;
+          border: 1px solid #d1d5db;
           border-radius: 6px;
+          background: white;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.2s;
+        }
+        .selector button.active {
           background: #2563eb;
           color: white;
-          font-weight: 600;
-          cursor: pointer;
-          transition: background 0.2s, transform 0.1s;
+          border-color: #2563eb;
         }
-        button:hover { background: #1d4ed8; }
-        button:active { transform: scale(0.98); }
-        button.reset { background: #ef4444; }
-        button.reset:hover { background: #dc2626; }
+        .selector button:hover:not(.active) {
+          border-color: #2563eb;
+          color: #2563eb;
+        }
+        .chart-container {
+          margin-top: 1rem;
+        }
       </style>
-      <div class="display">${this.count}</div>
-      <div class="buttons">
-        <button class="dec">−</button>
-        <button class="inc">+</button>
-        <button class="reset">Reset</button>
+      <div class="container">
+        <div class="header">
+          <div class="title">Crypto Tracker</div>
+          <div class="selector">
+            <button class="btc-btn active">Bitcoin</button>
+            <button class="eth-btn">Ethereum</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          ${this.createChart()}
+        </div>
       </div>
     `
 
-    const display = shadow.querySelector('.display') as HTMLElement
-    const dec = shadow.querySelector('.dec') as HTMLButtonElement
-    const inc = shadow.querySelector('.inc') as HTMLButtonElement
-    const reset = shadow.querySelector('.reset') as HTMLButtonElement
+    const btcBtn = shadow.querySelector('.btc-btn') as HTMLButtonElement
+    const ethBtn = shadow.querySelector('.eth-btn') as HTMLButtonElement
 
-    dec?.addEventListener('click', () => {
-      this.count--
-      display.textContent = String(this.count)
+    btcBtn?.addEventListener('click', () => {
+      this.selectedCrypto = 'bitcoin'
+      this.render()
     })
 
-    inc?.addEventListener('click', () => {
-      this.count++
-      display.textContent = String(this.count)
-    })
-
-    reset?.addEventListener('click', () => {
-      this.count = 0
-      display.textContent = String(this.count)
+    ethBtn?.addEventListener('click', () => {
+      this.selectedCrypto = 'ethereum'
+      this.render()
     })
   }
 
   reset(): void {
-    this.count = 0
-    const display = this.shadowRoot?.querySelector('.display') as HTMLElement | null
-    if (display) display.textContent = String(this.count)
+    this.selectedCrypto = 'bitcoin'
+    this.render()
   }
 }
 
-customElements.define('vanilla-counter', VanillaCounter)
+customElements.define('crypto-tracker', CryptoTracker)
 
-export default VanillaCounter
+export default CryptoTracker

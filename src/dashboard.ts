@@ -21,7 +21,7 @@ export function setupDashboard(): void {
       <main class="dashboard-grid">
         <section class="widget-section" data-widget-id="wc" draggable="true">
           <div class="widget-header">
-            <h2>Web Component</h2>
+            <h2>Crypto Tracker</h2>
             <span class="framework-badge">Web Components</span>
           </div>
           <div id="wc-counter"></div>
@@ -57,7 +57,7 @@ export function setupDashboard(): void {
   // Mount Web Component (custom element auto-registers)
   const wcContainer = document.querySelector('#wc-counter') as HTMLDivElement | null
   if (wcContainer) {
-    const el = document.createElement('vanilla-counter')
+    const el = document.createElement('crypto-tracker')
     wcContainer.appendChild(el)
   }
 
