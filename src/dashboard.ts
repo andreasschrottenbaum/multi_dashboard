@@ -19,7 +19,7 @@ export function setupDashboard(): void {
       </header>
 
       <main class="dashboard-grid">
-        <section class="widget-section">
+        <section class="widget-section" data-widget-id="wc" draggable="true">
           <div class="widget-header">
             <h2>Web Component</h2>
             <span class="framework-badge">Web Components</span>
@@ -27,7 +27,7 @@ export function setupDashboard(): void {
           <div id="wc-counter"></div>
         </section>
 
-        <section class="widget-section">
+        <section class="widget-section" data-widget-id="react" draggable="true">
           <div class="widget-header">
             <h2>React Widget</h2>
             <span class="framework-badge">React</span>
@@ -35,7 +35,7 @@ export function setupDashboard(): void {
           <div id="react-counter"></div>
         </section>
 
-        <section class="widget-section">
+        <section class="widget-section" data-widget-id="vue" draggable="true">
           <div class="widget-header">
             <h2>Vue Widget</h2>
             <span class="framework-badge">Vue</span>
@@ -43,7 +43,7 @@ export function setupDashboard(): void {
           <div id="vue-counter"></div>
         </section>
 
-        <section class="widget-section">
+        <section class="widget-section" data-widget-id="svelte" draggable="true">
           <div class="widget-header">
             <h2>Svelte Widget</h2>
             <span class="framework-badge">Svelte</span>
@@ -85,6 +85,77 @@ export function setupDashboard(): void {
   if (resetAllBtn) {
     resetAllBtn.addEventListener('click', () => {
       window.dispatchEvent(new CustomEvent('reset-widgets'))
+    })
+  }
+
+  // Drag & drop: reorder widget sections and persist order to localStorage
+  const mainGrid = appEl.querySelector('.dashboard-grid') as HTMLElement | null
+  if (mainGrid) {
+    const saveOrder = () => {
+      const order: string[] = Array.from(mainGrid.querySelectorAll('.widget-section'))
+        .map((s) => (s as HTMLElement).dataset.widgetId || '')
+        .filter(Boolean)
+      localStorage.setItem('widgetOrder', JSON.stringify(order))
+    }
+
+    const restoreOrder = () => {
+      try {
+        const raw = localStorage.getItem('widgetOrder')
+        if (!raw) return
+        const order: string[] = JSON.parse(raw)
+        if (!Array.isArray(order)) return
+        for (const id of order) {
+          const el = mainGrid.querySelector(`.widget-section[data-widget-id="${id}"]`) as HTMLElement | null
+          if (el) mainGrid.appendChild(el)
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+    }
+
+    // Restore previously-saved order before mounting widgets (if any)
+    restoreOrder()
+
+    let draggedId: string | null = null
+
+    const onDragStart = (e: DragEvent) => {
+      const target = e.currentTarget as HTMLElement | null
+      if (!target) return
+      draggedId = target.dataset.widgetId || null
+      e.dataTransfer?.setData('text/plain', draggedId || '')
+      e.dataTransfer!.effectAllowed = 'move'
+      target.classList.add('dragging')
+    }
+
+    const onDragEnd = (e: DragEvent) => {
+      const target = e.currentTarget as HTMLElement | null
+      if (target) target.classList.remove('dragging')
+      draggedId = null
+    }
+
+    const onDragOver = (e: DragEvent) => {
+      e.preventDefault()
+      e.dataTransfer!.dropEffect = 'move'
+    }
+
+    const onDrop = (e: DragEvent) => {
+      e.preventDefault()
+      const target = e.currentTarget as HTMLElement | null
+      if (!target) return
+      const data = e.dataTransfer?.getData('text/plain') || draggedId
+      if (!data) return
+      const draggedEl = mainGrid.querySelector(`.widget-section[data-widget-id="${data}"]`) as HTMLElement | null
+      if (!draggedEl || draggedEl === target) return
+      mainGrid.insertBefore(draggedEl, target)
+      saveOrder()
+    }
+
+    const sections = Array.from(mainGrid.querySelectorAll('.widget-section')) as HTMLElement[]
+    sections.forEach((sec) => {
+      sec.addEventListener('dragstart', onDragStart)
+      sec.addEventListener('dragend', onDragEnd)
+      sec.addEventListener('dragover', onDragOver)
+      sec.addEventListener('drop', onDrop)
     })
   }
 }
