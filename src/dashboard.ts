@@ -10,7 +10,7 @@ export function setupDashboard(): void {
   const appEl = document.querySelector('#app') as HTMLDivElement | null
   if (!appEl) return
 
-  appEl.innerHTML = /* html */`
+  appEl.innerHTML = `
     <div class="dashboard">
       <header class="dashboard-header">
         <h1>Multi-Framework Dashboard</h1>
