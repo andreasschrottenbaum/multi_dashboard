@@ -1,6 +1,6 @@
 import './widgets/webcomponents/VanillaCounter'
 import NewsTicker from './widgets/react/NewsTicker.tsx'
-import VueCounter from './widgets/vue/Counter.vue'
+import WeatherWidget from './widgets/vue/WeatherWidget.vue'
 import SvelteCounter from './widgets/svelte/Counter.svelte'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
@@ -37,7 +37,7 @@ export function setupDashboard(): void {
 
         <section class="widget-section" data-widget-id="vue" draggable="true">
           <div class="widget-header">
-            <h2>Vue Widget</h2>
+            <h2>Weather Widget</h2>
             <span class="framework-badge">Vue</span>
           </div>
           <div id="vue-counter"></div>
@@ -71,7 +71,7 @@ export function setupDashboard(): void {
   // Mount Vue widget
   const vueContainer = document.querySelector('#vue-counter') as HTMLDivElement | null
   if (vueContainer) {
-    createApp(VueCounter).mount(vueContainer)
+    createApp(WeatherWidget).mount(vueContainer)
   }
 
   // Mount Svelte widget
