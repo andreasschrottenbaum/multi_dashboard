@@ -128,7 +128,8 @@ Error generating stack: `+i.message+`
     <div class="dashboard">
       <header class="dashboard-header">
         <h1>Multi-Framework Dashboard</h1>
-        <p>A vanilla TypeScript host with counter widgets in Web Components, React, Vue, and Svelte</p>
+        <p>A TypeScript dashboard with widgets in Web Components, React, Vue, and Svelte</p>
+        <p>See the source code on <a href="https://github.com/andreasschrottenbaum/multi_dashboard/tree/main">GitHub</a>.</p>
         <button id="reset-all" class="reset-all">Reset all widgets</button>
       </header>
 
