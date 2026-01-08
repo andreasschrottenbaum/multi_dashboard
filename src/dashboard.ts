@@ -1,7 +1,7 @@
 import './widgets/webcomponents/VanillaCounter'
 import NewsTicker from './widgets/react/NewsTicker.tsx'
 import WeatherWidget from './widgets/vue/WeatherWidget.vue'
-import SvelteCounter from './widgets/svelte/Counter.svelte'
+import WordleGame from './widgets/svelte/WordleGame.svelte'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { createApp } from 'vue'
@@ -37,7 +37,7 @@ export function setupDashboard(): void {
 
         <section class="widget-section" data-widget-id="vue" draggable="true">
           <div class="widget-header">
-            <h2>Weather Widget</h2>
+            <h2>Weather</h2>
             <span class="framework-badge">Vue</span>
           </div>
           <div id="vue-counter"></div>
@@ -45,7 +45,7 @@ export function setupDashboard(): void {
 
         <section class="widget-section" data-widget-id="svelte" draggable="true">
           <div class="widget-header">
-            <h2>Svelte Widget</h2>
+            <h2>Wordle</h2>
             <span class="framework-badge">Svelte</span>
           </div>
           <div id="svelte-counter"></div>
@@ -77,7 +77,7 @@ export function setupDashboard(): void {
   // Mount Svelte widget
   const svelteContainer = document.querySelector('#svelte-counter') as HTMLDivElement | null
   if (svelteContainer) {
-    new SvelteCounter({ target: svelteContainer })
+    new WordleGame({ target: svelteContainer })
   }
 
   // Wire reset-all button to dispatch a global reset event
