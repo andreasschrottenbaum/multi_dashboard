@@ -39,6 +39,7 @@
   let won = false
   let letterStatuses: Map<string, LetterStatus> = new Map()
   let isLoading = true
+  let isFlipped = false
 
   $: t = LABELS[language]
   $: maxGuesses = 6
@@ -123,6 +124,9 @@
     window.addEventListener('reset-widgets', () => {
       initGame()
     })
+    window.addEventListener('toggle-flip-svelte', () => {
+      isFlipped = !isFlipped
+    })
   })
 
   onDestroy(() => {
@@ -130,7 +134,10 @@
   })
 </script>
 
-<div class="wordle-game">
+<div class="widget-flipper">
+  <div class="widget-flip-inner" class:flipped={isFlipped}>
+    <div class="widget-flip-front">
+      <div class="wordle-game">
   <div class="wordle-header">
     <h3>{t.title}</h3>
     <div class="language-selector">
@@ -202,6 +209,17 @@
       <p>{t.instructions}</p>
     </div>
   {/if}
+      </div>
+    </div>
+    <div class="widget-flip-back">
+      <div style="padding: 1rem;">
+        <h3 style="margin-top: 0;">Wordle Game</h3>
+        <p><strong>Description:</strong> Classic word guessing game with English and German language support.</p>
+        <p><strong>How to play:</strong> Guess the 5-letter word in 6 attempts. Green = correct position, Yellow = in word wrong position, Gray = not in word.</p>
+        <p><strong>Languages:</strong> English (en) and German (de)</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>

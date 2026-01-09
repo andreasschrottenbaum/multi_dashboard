@@ -9,6 +9,7 @@ class CryptoTracker extends HTMLElement {
   selectedCrypto: 'bitcoin' | 'ethereum' = 'bitcoin'
   cryptoData: Map<string, CryptoData> = new Map()
   handleReset: () => void
+  isFlipped: boolean = false
 
   constructor() {
     super()
@@ -18,6 +19,10 @@ class CryptoTracker extends HTMLElement {
 
   async connectedCallback(): Promise<void> {
     window.addEventListener('reset-widgets', this.handleReset as EventListener)
+    window.addEventListener('toggle-flip-wc', () => {
+      this.isFlipped = !this.isFlipped
+      this.render()
+    })
     await this.fetchCryptoData()
     this.render()
   }
@@ -96,6 +101,11 @@ class CryptoTracker extends HTMLElement {
     shadow.innerHTML = `
       <style>
         :host { display: block; }
+        .flipper { perspective: 1000px; min-height: 100%; }
+        .flip-inner { position: relative; width: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-inner.flipped { transform: rotateY(180deg); }
+        .flip-front, .flip-back { backface-visibility: hidden; width: 100%; }
+        .flip-back { transform: rotateY(180deg); }
         .container {
           padding: 1rem;
           background: white;
@@ -138,16 +148,30 @@ class CryptoTracker extends HTMLElement {
           margin-top: 1rem;
         }
       </style>
-      <div class="container">
-        <div class="header">
-          <div class="title">Crypto Tracker</div>
-          <div class="selector">
-            <button class="btc-btn active">Bitcoin</button>
-            <button class="eth-btn">Ethereum</button>
+      <div class="flipper">
+        <div class="flip-inner ${this.isFlipped ? 'flipped' : ''}">
+          <div class="flip-front">
+            <div class="container">
+              <div class="header">
+                <div class="title">Crypto Tracker</div>
+                <div class="selector">
+                  <button class="btc-btn active">Bitcoin</button>
+                  <button class="eth-btn">Ethereum</button>
+                </div>
+              </div>
+              <div class="chart-container">
+                ${this.createChart()}
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="chart-container">
-          ${this.createChart()}
+          <div class="flip-back">
+            <div style="padding: 1rem;">
+              <h3 style="margin-top: 0;">Crypto Tracker</h3>
+              <p><strong>Description:</strong> Real-time cryptocurrency price tracking and 7-day trend analysis.</p>
+              <p><strong>Features:</strong> Bitcoin and Ethereum price charts, 7-day price changes, interactive crypto selection.</p>
+              <p><strong>Data Source:</strong> CoinGecko API (free, no authentication required)</p>
+            </div>
+          </div>
         </div>
       </div>
     `
@@ -168,6 +192,7 @@ class CryptoTracker extends HTMLElement {
 
   reset(): void {
     this.selectedCrypto = 'bitcoin'
+    this.isFlipped = false
     this.render()
   }
 }

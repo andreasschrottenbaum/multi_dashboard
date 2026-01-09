@@ -76,6 +76,7 @@ export default function NewsTicker() {
   const [news, setNews] = useState<NewsItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isFlipped, setIsFlipped] = useState(false)
 
   useEffect(() => {
     const loadNews = async () => {
@@ -100,12 +101,22 @@ export default function NewsTicker() {
     const handleReset = () => {
       setSource('hackernews')
     }
+    const handleFlip = () => {
+      setIsFlipped(prev => !prev)
+    }
     window.addEventListener('reset-widgets', handleReset)
-    return () => window.removeEventListener('reset-widgets', handleReset)
+    window.addEventListener('toggle-flip-react', handleFlip)
+    return () => {
+      window.removeEventListener('reset-widgets', handleReset)
+      window.removeEventListener('toggle-flip-react', handleFlip)
+    }
   }, [])
 
   return (
-    <div className="news-ticker">
+    <div className="widget-flipper">
+      <div className={`widget-flip-inner ${isFlipped ? 'flipped' : ''}`}>
+        <div className="widget-flip-front">
+          <div className="news-ticker">
       <div className="news-source-selector">
         <label htmlFor="source-select">News Source:</label>
         <select
@@ -141,6 +152,17 @@ export default function NewsTicker() {
             ))}
         </div>
       }
+    </div>
+        </div>
+        <div className="widget-flip-back">
+          <div style={{ padding: '1rem' }}>
+            <h3 style={{ marginTop: 0 }}>News Ticker</h3>
+            <p><strong>Description:</strong> Aggregate news from multiple sources including Hacker News, DEV.to, and Reddit.</p>
+            <p><strong>Features:</strong> Multiple news source selection, real-time updates, external links to articles.</p>
+            <p><strong>Data Sources:</strong> Hacker News API, DEV.to API, Reddit API</p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

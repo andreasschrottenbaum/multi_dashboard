@@ -1,37 +1,51 @@
 <template>
-  <div class="weather-widget">
-    <div class="weather-input">
-      <input
-        v-model="location"
-        type="text"
-        placeholder="Enter city name or coordinates"
-        @keyup.enter="searchWeather"
-      />
-      <button @click="searchWeather" class="btn-search">Search</button>
-      <button @click="getLocalWeather" class="btn-local">📍 Local Weather</button>
-    </div>
+  <div class="widget-flipper">
+    <div class="widget-flip-inner" :class="{ flipped: isFlipped }">
+      <div class="widget-flip-front">
+        <div class="weather-widget">
+          <div class="weather-input">
+            <input
+              v-model="location"
+              type="text"
+              placeholder="Enter city name or coordinates"
+              @keyup.enter="searchWeather"
+            />
+            <button @click="searchWeather" class="btn-search">Search</button>
+            <button @click="getLocalWeather" class="btn-local">📍 Local Weather</button>
+          </div>
 
-    <div v-if="loading" class="weather-loading">Loading weather...</div>
-    <div v-if="error" class="weather-error">{{ error }}</div>
+          <div v-if="loading" class="weather-loading">Loading weather...</div>
+          <div v-if="error" class="weather-error">{{ error }}</div>
 
-    <div v-if="weather" class="weather-display">
-      <h3>{{ currentLocation }}</h3>
-      <div class="weather-main">
-        <div class="weather-temp">{{ Math.round(weather.temperature) }}°C</div>
-        <div class="weather-condition">{{ getWeatherDescription(weather.weatherCode) }}</div>
+          <div v-if="weather" class="weather-display">
+            <h3>{{ currentLocation }}</h3>
+            <div class="weather-main">
+              <div class="weather-temp">{{ Math.round(weather.temperature) }}°C</div>
+              <div class="weather-condition">{{ getWeatherDescription(weather.weatherCode) }}</div>
+            </div>
+            <div class="weather-details">
+              <div class="detail">
+                <span class="label">Humidity</span>
+                <span class="value">{{ weather.humidity }}%</span>
+              </div>
+              <div class="detail">
+                <span class="label">Wind</span>
+                <span class="value">{{ Math.round(weather.windSpeed) }} km/h</span>
+              </div>
+              <div class="detail">
+                <span class="label">Pressure</span>
+                <span class="value">{{ weather.pressure }} hPa</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="weather-details">
-        <div class="detail">
-          <span class="label">Humidity</span>
-          <span class="value">{{ weather.humidity }}%</span>
-        </div>
-        <div class="detail">
-          <span class="label">Wind</span>
-          <span class="value">{{ Math.round(weather.windSpeed) }} km/h</span>
-        </div>
-        <div class="detail">
-          <span class="label">Pressure</span>
-          <span class="value">{{ weather.pressure }} hPa</span>
+      <div class="widget-flip-back">
+        <div style="padding: 1rem;">
+          <h3 style="margin-top: 0;">Weather Widget</h3>
+          <p><strong>Description:</strong> Real-time weather information for any city using Open-Meteo API.</p>
+          <p><strong>Features:</strong> City search, local weather via geolocation, temperature, humidity, wind, and pressure data.</p>
+          <p><strong>Data Source:</strong> Open-Meteo API (free, no authentication required)</p>
         </div>
       </div>
     </div>
@@ -58,7 +72,21 @@ export default defineComponent({
       currentLocation: 'Berlin',
       loading: false,
       error: null as string | null,
+      isFlipped: false,
     }
+  },
+  mounted() {
+    window.addEventListener('toggle-flip-vue', () => {
+      this.isFlipped = !this.isFlipped
+    })
+    // Load initial weather for default location
+    this.searchWeather()
+
+    // Listen for reset event from dashboard
+    window.addEventListener('reset-widgets', () => {
+      this.location = 'Berlin'
+      this.searchWeather()
+    })
   },
   methods: {
     async searchWeather() {
@@ -156,17 +184,6 @@ export default defineComponent({
       }
       return descriptions[code] || '🌡️ Unknown'
     },
-  },
-
-  mounted() {
-    // Load initial weather for default location
-    this.searchWeather()
-
-    // Listen for reset event from dashboard
-    window.addEventListener('reset-widgets', () => {
-      this.location = 'Berlin'
-      this.searchWeather()
-    })
   },
 
   beforeUnmount() {

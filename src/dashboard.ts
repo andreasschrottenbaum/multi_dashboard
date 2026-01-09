@@ -2,6 +2,10 @@ import './widgets/webcomponents/CryptoTracker.ts'
 import NewsTicker from './widgets/react/NewsTicker.tsx'
 import WeatherWidget from './widgets/vue/WeatherWidget.vue'
 import WordleGame from './widgets/svelte/WordleGame.svelte'
+import WebComponentsLogo from './assets/WebComponents.svg'
+import ReactLogo from './assets/React.svg'
+import VueLogo from './assets/Vue.svg'
+import SvelteLogo from './assets/Svelte.svg'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { createApp } from 'vue'
@@ -22,32 +26,52 @@ export function setupDashboard(): void {
       <main class="dashboard-grid">
         <section class="widget-section" data-widget-id="wc" draggable="true">
           <div class="widget-header">
-            <h2>Crypto Tracker</h2>
-            <span class="framework-badge">Web Components</span>
+            <div>
+              <h2>Crypto Tracker</h2>
+            </div>
+            <div class="header-right">
+              <button class="widget-settings-btn" data-widget-id="wc" title="Settings">⚙️</button>
+              <span class="framework-badge"><img src="${WebComponentsLogo}" alt="Web Components" class="badge-logo">Web Components</span>
+            </div>
           </div>
           <div id="wc-counter"></div>
         </section>
 
         <section class="widget-section" data-widget-id="react" draggable="true">
           <div class="widget-header">
-            <h2>News Ticker</h2>
-            <span class="framework-badge">React</span>
+            <div>
+              <h2>News Ticker</h2>
+            </div>
+            <div class="header-right">
+              <button class="widget-settings-btn" data-widget-id="react" title="Settings">⚙️</button>
+              <span class="framework-badge"><img src="${ReactLogo}" alt="React" class="badge-logo">React</span>
+            </div>
           </div>
           <div id="react-counter"></div>
         </section>
 
         <section class="widget-section" data-widget-id="vue" draggable="true">
           <div class="widget-header">
-            <h2>Weather</h2>
-            <span class="framework-badge">Vue</span>
+            <div>
+              <h2>Weather</h2>
+            </div>
+            <div class="header-right">
+              <button class="widget-settings-btn" data-widget-id="vue" title="Settings">⚙️</button>
+              <span class="framework-badge"><img src="${VueLogo}" alt="Vue" class="badge-logo">Vue</span>
+            </div>
           </div>
           <div id="vue-counter"></div>
         </section>
 
         <section class="widget-section" data-widget-id="svelte" draggable="true">
           <div class="widget-header">
-            <h2>Wordle</h2>
-            <span class="framework-badge">Svelte</span>
+            <div>
+              <h2>Wordle</h2>
+            </div>
+            <div class="header-right">
+              <button class="widget-settings-btn" data-widget-id="svelte" title="Settings">⚙️</button>
+              <span class="framework-badge"><img src="${SvelteLogo}" alt="Svelte" class="badge-logo">Svelte</span>
+            </div>
           </div>
           <div id="svelte-counter"></div>
         </section>
@@ -88,6 +112,18 @@ export function setupDashboard(): void {
       window.dispatchEvent(new CustomEvent('reset-widgets'))
     })
   }
+
+  // Wire settings buttons to dispatch toggle-flip events
+  const settingsButtons = Array.from(appEl.querySelectorAll('.widget-settings-btn')) as HTMLButtonElement[]
+  settingsButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const widgetId = btn.dataset.widgetId
+      if (widgetId) {
+        window.dispatchEvent(new CustomEvent(`toggle-flip-${widgetId}`))
+      }
+    })
+  })
 
   // Drag & drop: reorder widget sections and persist order to localStorage
   const mainGrid = appEl.querySelector('.dashboard-grid') as HTMLElement | null
