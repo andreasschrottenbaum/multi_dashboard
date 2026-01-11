@@ -213,7 +213,8 @@
     </div>
     <div class="widget-flip-back">
       <div style="padding: 1rem;">
-        <h3 style="margin-top: 0;">Wordle Game</h3>
+        <h3 style="margin-top: 0;">Wordle Game</h3> 
+        <p><strong>Motivation:</strong> This widget focuses on complex local state, user input handling, validation, and feedback loops — all common patterns in enterprise UIs.</p>
         <p><strong>Description:</strong> Classic word guessing game with English and German language support.</p>
         <p><strong>How to play:</strong> Guess the 5-letter word in 6 attempts. Green = correct position, Yellow = in word wrong position, Gray = not in word.</p>
         <p><strong>Languages:</strong> English (en) and German (de)</p>

@@ -263,6 +263,16 @@ body {
   transform: scale(0.98);
 }
 
+.focus-areas strong {
+  display: block;
+  margin-top: 2rem;
+}
+
+.focus-areas ul {
+  display: inline-block;
+  text-align-last: left;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard {
