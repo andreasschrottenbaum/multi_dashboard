@@ -19,7 +19,7 @@ export function setupDashboard(): void {
       <header class="dashboard-header">
         <h1>Multi-Framework Dashboard</h1>
         <p>A frontend architecture showcase built with TypeScript, Web Components, React, Vue, and Svelte.</p>
-        <p>This project demonstrates how multiple modern frontend frameworks can coexist within a single application using Web Components as an integration layer. Each widget is independently implemented, framework-isolated, and mounted into a shared dashboard layout.</p>
+        <p>This project demonstrates how multiple modern frontend frameworks can coexist within a single application using Web Components as an integration layer. Each widget is independently implemented, framework-isolated, and integrated via explicit contracts.</p>
         
         <div class="focus-areas">
           <strong>Focus areas:</strong>
