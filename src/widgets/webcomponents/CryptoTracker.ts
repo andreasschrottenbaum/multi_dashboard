@@ -10,6 +10,8 @@ class CryptoTracker extends HTMLElement {
   cryptoData: Map<string, CryptoData> = new Map()
   handleReset: () => void
   isFlipped: boolean = false
+  isInitialized: boolean = false
+  failedToFetch: boolean = false
 
   constructor() {
     super()
@@ -18,6 +20,9 @@ class CryptoTracker extends HTMLElement {
   }
 
   async connectedCallback(): Promise<void> {
+    if (this.isInitialized) return
+    this.isInitialized = true
+
     window.addEventListener('reset-widgets', this.handleReset as EventListener)
     window.addEventListener('toggle-flip-wc', () => {
       this.isFlipped = !this.isFlipped
@@ -36,7 +41,7 @@ class CryptoTracker extends HTMLElement {
       const cryptos = ['bitcoin', 'ethereum']
       for (const crypto of cryptos) {
         const response = await fetch(
-          `https://api.coingecko.com/api/v3/coins/${crypto}/market_chart?vs_currency=usd&days=7&interval=daily`
+          `https://api.coingecko.com/api/v3/coins/${crypto}/market_chart?vs_currency=eur&days=7&interval=daily`
         )
         const data = await response.json()
         this.cryptoData.set(crypto, {
@@ -47,7 +52,23 @@ class CryptoTracker extends HTMLElement {
         })
       }
     } catch (error) {
-      console.error('Failed to fetch crypto data:', error)
+      this.failedToFetch = true
+
+      // Fallback to static data in case of fetch failure
+      this.cryptoData.set('bitcoin', {
+        symbol: 'BTC',
+        name: 'Bitcoin',
+        prices: [[1767657600000,93926.7956485658],[1767744000000,93666.86387314305],[1767830400000,91257.15544035907],[1767916800000,90983.51578142625],[1768003200000,90504.89560340019],[1768089600000,90442.01907847001],[1768176000000,90819.36598904192],[1768182821000,91332.45154303852]],
+        marketCaps: [[1767657600000,1876558232963.0544],[1767744000000,1870043996457.1855],[1767830400000,1822220317807.3809],[1767916800000,1817249307661.4592],[1768003200000,1807784901284.322],[1768089600000,1806483854865.5005],[1768176000000,1814078415941.0112],[1768182821000,1824417146676.6152]]
+      })
+
+
+      this.cryptoData.set('ethereum', {
+        symbol: 'ETH',
+        name: 'Ethereum',
+        prices: [[1767657600000,3228.2962247842056],[1767744000000,3295.101927879638],[1767830400000,3164.794750249208],[1767916800000,3104.220322474917],[1768003200000,3083.1361173724354],[1768089600000,3082.9653288303607],[1768176000000,3119.3619360372772],[1768182840000,3123.5351899627035]],
+        marketCaps: [[1767657600000,389933475562.2665],[1767744000000,397608381234.7261],[1767830400000,381974224305.5651],[1767916800000,374637574706.1186],[1768003200000,372149000810.8756],[1768089600000,372186920089.48895],[1768176000000,376488796661.5709],[1768182840000,377064259286.1257]]
+      })
     }
   }
 
@@ -84,7 +105,7 @@ class CryptoTracker extends HTMLElement {
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; font-size: 0.9rem;">
         <div>
           <div style="color: #6b7280;">Current Price</div>
-          <div style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">$${currentPrice.toFixed(2)}</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">€${currentPrice.toFixed(2)}</div>
         </div>
         <div>
           <div style="color: #6b7280;">7-Day Change</div>
@@ -104,7 +125,7 @@ class CryptoTracker extends HTMLElement {
         .flipper { perspective: 1000px; min-height: 100%; }
         .flip-inner { position: relative; width: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
         .flip-inner.flipped { transform: rotateY(180deg); }
-        .flip-front, .flip-back { backface-visibility: hidden; width: 100%; }
+        .flip-front, .flip-back { backface-visibility: hidden; width: 100%; position: absolute; }
         .flip-back { transform: rotateY(180deg); }
         .container {
           padding: 1rem;
@@ -147,6 +168,13 @@ class CryptoTracker extends HTMLElement {
         .chart-container {
           margin-top: 1rem;
         }
+        .error {
+          margin-top: 1rem;
+          color: #ef4444;
+          font-weight: 600;
+          background: #fee2e2;
+          padding: 0.5rem;
+        }
       </style>
       <div class="flipper">
         <div class="flip-inner ${this.isFlipped ? 'flipped' : ''}">
@@ -155,13 +183,15 @@ class CryptoTracker extends HTMLElement {
               <div class="header">
                 <div class="title">Crypto Tracker</div>
                 <div class="selector">
-                  <button class="btc-btn active">Bitcoin</button>
-                  <button class="eth-btn">Ethereum</button>
+                  <button class="btc-btn ${this.selectedCrypto === 'bitcoin' ? 'active' : ''}">Bitcoin</button>
+                  <button class="eth-btn ${this.selectedCrypto === 'ethereum' ? 'active' : ''}">Ethereum</button>
                 </div>
               </div>
               <div class="chart-container">
                 ${this.createChart()}
               </div>
+
+              ${this.failedToFetch ? `<div class="error">Failed to fetch live data. Displaying static data.</div>` : ''}
             </div>
           </div>
           <div class="flip-back">
