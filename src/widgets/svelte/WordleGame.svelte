@@ -169,6 +169,7 @@
             autocapitalize="none"
             spellcheck="false"
             value={currentGuess}
+            on:focus={focusInput}
             on:input={handleInput}
             on:keydown={(e) => e.key === 'Enter' && submitGuess()}
           />
