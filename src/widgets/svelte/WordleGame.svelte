@@ -108,6 +108,7 @@
   function focusInput() {
     if (hiddenInput) {
       hiddenInput.focus()
+      hiddenInput.click()
     }
   }
 
