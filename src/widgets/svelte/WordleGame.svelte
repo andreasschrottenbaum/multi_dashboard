@@ -92,18 +92,18 @@
     currentGuess = ''
   }
 
-  function handleKeydown(e: KeyboardEvent) {
-    if (gameOver || won || isLoading) return
-    if (/^[a-zA-Z]$/.test(e.key)) {
-      if (currentGuess.length < 5) {
-        currentGuess += e.key.toUpperCase()
-      }
-    } else if (e.key === 'Backspace') {
-      currentGuess = currentGuess.slice(0, -1)
-    } else if (e.key === 'Enter') {
-      submitGuess()
-    }
-  }
+  // function handleKeydown(e: KeyboardEvent) {
+  //   if (gameOver || won || isLoading) return
+  //   if (/^[a-zA-Z]$/.test(e.key)) {
+  //     if (currentGuess.length < 5) {
+  //       currentGuess += e.key.toUpperCase()
+  //     }
+  //   } else if (e.key === 'Backspace') {
+  //     currentGuess = currentGuess.slice(0, -1)
+  //   } else if (e.key === 'Enter') {
+  //     submitGuess()
+  //   }
+  // }
 
   function focusInput() {
     if (hiddenInput) {
@@ -129,7 +129,7 @@
 
   onMount(() => {
     initGame()
-    window.addEventListener('keydown', handleKeydown)
+    // window.addEventListener('keydown', handleKeydown)
     window.addEventListener('reset-widgets', () => {
       initGame()
     })
@@ -139,7 +139,7 @@
   })
 
   onDestroy(() => {
-    window.removeEventListener('keydown', handleKeydown)
+    // window.removeEventListener('keydown', handleKeydown)
   })
 </script>
 
@@ -169,7 +169,6 @@
             autocapitalize="none"
             spellcheck="false"
             value={currentGuess}
-            on:click={focusInput}
             on:input={handleInput}
             on:keydown={(e) => e.key === 'Enter' && submitGuess()}
           />
@@ -190,7 +189,7 @@
                   {/each}
                 {:else if i === guesses.length}
                   {#each Array(5) as _, j}
-                    <input type="text" class="wordle-cell current" class:filled={j < currentGuess.length} value={currentGuess[j] || ''} readonly />
+                    <input type="text" on:click={focusInput} class="wordle-cell current" class:filled={j < currentGuess.length} value={currentGuess[j] || ''} readonly />
                   {/each}
                 {:else}
                   {#each Array(5) as _}
