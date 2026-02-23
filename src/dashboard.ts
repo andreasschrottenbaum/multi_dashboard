@@ -2,10 +2,12 @@ import './widgets/webcomponents/CryptoTracker.ts'
 import NewsTicker from './widgets/react/NewsTicker.tsx'
 import WeatherWidget from './widgets/vue/WeatherWidget.vue'
 import WordleGame from './widgets/svelte/WordleGame.svelte'
+
 import WebComponentsLogo from './assets/WebComponents.svg'
 import ReactLogo from './assets/React.svg'
 import VueLogo from './assets/Vue.svg'
 import SvelteLogo from './assets/Svelte.svg'
+
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { createApp } from 'vue'
@@ -15,6 +17,12 @@ export function setupDashboard(): void {
   if (!appEl) return
 
   appEl.innerHTML = `
+    <div class="theme-selector">
+      <label for="dark-mode-toggle">☀️</label>
+      <input type="checkbox" id="dark-mode-toggle">
+      <label for="dark-mode-toggle">🌙</label>
+    </div>
+
     <div class="dashboard">
       <header class="dashboard-header">
         <h1>Multi-Framework Dashboard</h1>
@@ -31,7 +39,7 @@ export function setupDashboard(): void {
           </ul>
         </div>
         
-        <p><a target="_blank" href="https://github.com/andreasschrottenbaum/multi_dashboard/tree/main">[View source on GitHub]</a>.</p>
+        <p><a target="_blank" href="https://github.com/andreasschrottenbaum/multi_dashboard/tree/main">[View source on GitHub]</a></p>
         <!--<button id="reset-all" class="reset-all">Reset all widgets</button>-->
       </header>
 
@@ -90,6 +98,22 @@ export function setupDashboard(): void {
       </main>
     </div>
   `
+
+  const themeToggle = document.querySelector('#dark-mode-toggle') as HTMLInputElement | null
+  if (themeToggle) {
+    const applyTheme = () => {
+      document.documentElement.classList.toggle('dark-mode', themeToggle.checked)
+      document.documentElement.classList.toggle('light-mode', !themeToggle.checked)
+    }
+
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    if (systemPrefersDark) {
+      themeToggle.checked = true
+    }
+
+    themeToggle.addEventListener('change', applyTheme)
+    applyTheme()
+  }
 
   // Mount Web Component (custom element auto-registers)
   const wcContainer = document.querySelector('#wc-counter') as HTMLDivElement | null

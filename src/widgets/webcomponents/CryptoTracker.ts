@@ -15,7 +15,7 @@ class CryptoTracker extends HTMLElement {
 
   constructor() {
     super()
-    this.attachShadow({ mode: 'open' })
+    // this.attachShadow({ mode: 'open' })
     this.handleReset = this.reset.bind(this)
   }
 
@@ -99,89 +99,32 @@ class CryptoTracker extends HTMLElement {
     const changeColor = change >= 0 ? '#10b981' : '#ef4444'
 
     return `
-      <svg width="100%" height="150" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" style="border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; max-width: 100%;">
+      <svg width="100%" height="150" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet">
         <polyline points="${points}" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; font-size: 0.9rem;">
-        <div>
-          <div style="color: #6b7280;">Current Price</div>
-          <div style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">€${currentPrice.toFixed(2)}</div>
+      <div>
+        <div class="stats">
+          <div class="desc">Current Price</div>
+          <div class="current">€${currentPrice.toFixed(2)}</div>
         </div>
-        <div>
-          <div style="color: #6b7280;">7-Day Change</div>
-          <div style="font-size: 1.5rem; font-weight: 700; color: ${changeColor};">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
+        <div class="stats">
+          <div class="desc">7-Day Change</div>
+          <div class="${change >= 0 ? 'positive' : 'negative'}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
         </div>
       </div>
     `
   }
 
   render(): void {
-    const shadow = this.shadowRoot
-    if (!shadow) return
+    // const shadow = this.shadowRoot
+    // if (!shadow) return
 
-    shadow.innerHTML = `
-      <style>
-        :host { display: block; }
-        .flipper { perspective: 1000px; min-height: 100%; }
-        .flip-inner { position: relative; width: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
-        .flip-inner.flipped { transform: rotateY(180deg); }
-        .flip-front, .flip-back { backface-visibility: hidden; width: 100%; position: absolute; }
-        .flip-back { transform: rotateY(180deg); }
-        .container {
-          padding: 1rem;
-          background: white;
-          border-radius: 8px;
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-        .title {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #1f2937;
-        }
-        .selector {
-          display: flex;
-          gap: 0.5rem;
-        }
-        .selector button {
-          padding: 0.5rem 1rem;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          background: white;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.2s;
-        }
-        .selector button.active {
-          background: #2563eb;
-          color: white;
-          border-color: #2563eb;
-        }
-        .selector button:hover:not(.active) {
-          border-color: #2563eb;
-          color: #2563eb;
-        }
-        .chart-container {
-          margin-top: 1rem;
-        }
-        .error {
-          margin-top: 1rem;
-          color: #ef4444;
-          font-weight: 600;
-          background: #fee2e2;
-          padding: 0.5rem;
-        }
-      </style>
-      <div class="flipper">
-        <div class="flip-inner ${this.isFlipped ? 'flipped' : ''}">
-          <div class="flip-front">
+    this.innerHTML = `
+      <div class="widget-flipper">
+        <div class="widget-flip-inner ${this.isFlipped ? 'flipped' : ''}">
+          <div class="widget-flip-front">
             <div class="container">
               <div class="header">
-                <div class="title">Crypto Tracker</div>
                 <div class="selector">
                   <button class="btc-btn ${this.selectedCrypto === 'bitcoin' ? 'active' : ''}">Bitcoin</button>
                   <button class="eth-btn ${this.selectedCrypto === 'ethereum' ? 'active' : ''}">Ethereum</button>
@@ -194,9 +137,8 @@ class CryptoTracker extends HTMLElement {
               ${this.failedToFetch ? `<div class="error">Failed to fetch live data. Displaying static data.</div>` : ''}
             </div>
           </div>
-          <div class="flip-back">
-            <div style="padding: 1rem;">
-              <h3 style="margin-top: 0;">Crypto Tracker</h3>
+          <div class="widget-flip-back">
+            <div>
               <p><strong>Description:</strong> Real-time cryptocurrency price tracking and 7-day trend analysis.</p>
               <p><strong>Features:</strong> Bitcoin and Ethereum price charts, 7-day price changes, interactive crypto selection.</p>
               <p><strong>Data Source:</strong> CoinGecko API (free, no authentication required)</p>
@@ -206,8 +148,8 @@ class CryptoTracker extends HTMLElement {
       </div>
     `
 
-    const btcBtn = shadow.querySelector('.btc-btn') as HTMLButtonElement
-    const ethBtn = shadow.querySelector('.eth-btn') as HTMLButtonElement
+    const btcBtn = this.querySelector('.btc-btn') as HTMLButtonElement
+    const ethBtn = this.querySelector('.eth-btn') as HTMLButtonElement
 
     btcBtn?.addEventListener('click', () => {
       this.selectedCrypto = 'bitcoin'

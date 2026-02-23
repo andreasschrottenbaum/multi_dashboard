@@ -10,8 +10,8 @@
               placeholder="Enter city name or coordinates"
               @keyup.enter="searchWeather"
             />
-            <button @click="searchWeather" class="btn-search">Search</button>
-            <button @click="getLocalWeather" class="btn-local">📍 Local Weather</button>
+            <button @click="searchWeather" class="btn-search active">Search</button>
+            <button @click="getLocalWeather" class="btn-local accent">📍 Local Weather</button>
           </div>
 
           <div v-if="loading" class="weather-loading">Loading weather...</div>
@@ -41,8 +41,7 @@
         </div>
       </div>
       <div class="widget-flip-back">
-        <div style="padding: 1rem;">
-          <h3 style="margin-top: 0;">Weather Widget</h3>
+        <div>
           <p><strong>Description:</strong> Real-time weather information for any city using Open-Meteo API.</p>
           <p><strong>Features:</strong> City search, local weather via geolocation, temperature, humidity, wind, and pressure data.</p>
           <p><strong>Data Source:</strong> Open-Meteo API (free, no authentication required)</p>
@@ -196,156 +195,51 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.weather-widget {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.weather-input {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.weather-input input {
-  flex: 1;
-  min-width: 150px;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  transition: border-color 0.2s;
-}
-
-.weather-input input:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-}
-
-.btn-search,
-.btn-local {
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  white-space: nowrap;
-}
-
-.btn-search {
-  background: #2563eb;
-  color: white;
-}
-
-.btn-search:hover {
-  background: #1d4ed8;
-}
-
-.btn-local {
-  background: #10b981;
-  color: white;
-}
-
-.btn-local:hover {
-  background: #059669;
-}
-
-.btn-search:active,
-.btn-local:active {
-  transform: scale(0.98);
-}
-
-.weather-loading,
-.weather-error {
-  text-align: center;
-  padding: 1rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.weather-loading {
-  color: #6b7280;
-  background: #f9fafb;
-}
-
-.weather-error {
-  color: #ef4444;
-  background: #fee;
-}
-
-.weather-display h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1rem;
-  color: #1f2937;
-}
-
-.weather-main {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  color: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.weather-temp {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.weather-condition {
-  font-size: 1.1rem;
-  opacity: 0.95;
-}
-
-.weather-details {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-.detail {
-  display: flex;
-  flex-direction: column;
-  padding: 0.75rem;
-  background: #f9fafb;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.detail .label {
-  font-size: 0.8rem;
-  color: #6b7280;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.25rem;
-}
-
-.detail .value {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-@media (max-width: 480px) {
   .weather-input {
-    flex-direction: column;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1em;
   }
 
-  .weather-input input,
-  .btn-search,
-  .btn-local {
-    width: 100%;
+  .weather-main {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 1rem;
+
+    .weather-temp {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .weather-condition {
+      font-size: 1.1rem;
+      opacity: .95;
+    }
   }
 
   .weather-details {
-    grid-template-columns: 1fr;
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+
+    .detail {
+      text-align: center;
+      background: var(--border-color);
+      color: var(--secondary-text-color);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+
+    .value {
+      display: block;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
   }
-}
 </style>

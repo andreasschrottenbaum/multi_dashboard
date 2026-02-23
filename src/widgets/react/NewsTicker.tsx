@@ -155,8 +155,8 @@ export default function NewsTicker() {
     </div>
         </div>
         <div className="widget-flip-back">
-          <div style={{ padding: '1rem' }}>
-            <h3 style={{ marginTop: 0 }}>News Ticker</h3>
+          <div>
+            <h3>News Ticker</h3>
             <p><strong>Description:</strong> Aggregate news from multiple sources including Hacker News, DEV.to, and Reddit.</p>
             <p><strong>Features:</strong> Multiple news source selection, real-time updates, external links to articles.</p>
             <p><strong>Data Sources:</strong> Hacker News API, DEV.to API, Reddit API</p>
