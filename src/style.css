@@ -52,12 +52,12 @@ select {
 
   &.active {
     background-color: var(--accent-color);
-    color: #fff;
+    color: var(--text-color);
   }
 
   &.accent {
     background-color: var(--clr-success);
-    color: #fff;
+    color: var(--text-color);
   }
 }
 
@@ -80,6 +80,7 @@ select, ::picker(select) {
   border: none;
   border-radius: .5rem;
   padding: .5rem 1rem;
+  color: var(--text-color);
 }
 
 h1 {
@@ -303,6 +304,13 @@ svg {
 
 button {
   font-family: inherit;
+}
+
+.hidden-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
 }
 
 crypto-tracker {

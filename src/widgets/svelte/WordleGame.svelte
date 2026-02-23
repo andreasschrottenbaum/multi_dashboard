@@ -36,6 +36,7 @@
   let letterStatuses: Map<string, LetterStatus> = new Map()
   let isLoading = true
   let isFlipped = false
+  let hiddenInput: HTMLInputElement | null = null
 
   $: t = LABELS[language]
   $: maxGuesses = 6
@@ -104,6 +105,17 @@
     }
   }
 
+  function focusInput() {
+    if (hiddenInput) {
+      hiddenInput.focus()
+    }
+  }
+
+  function handleInput(event: Event) {
+    const input = event.target as HTMLInputElement
+    currentGuess = input.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 5)
+  }
+
   function getRowStatus(guess: string): LetterStatus[] {
     return Array.from(guess).map((letter, i) => getLetterStatus(letter, targetWord, i))
   }
@@ -147,6 +159,19 @@
         {#if isLoading}
           <div class="wordle-loading">{t.loading}</div>
         {:else}
+          <input
+            bind:this={hiddenInput}
+            type="text"
+            class="hidden-input"
+            maxlength="5"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            value={currentGuess}
+            on:input={handleInput}
+            on:keydown={(e) => e.key === 'Enter' && submitGuess()}
+          />
+
           <div class="wordle-board">
             {#each Array(maxGuesses) as _, i}
               <div class="wordle-row">
